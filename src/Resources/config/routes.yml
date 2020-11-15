@@ -1,0 +1,3 @@
+controllers:
+  resource: '@UserAuthenticationBundle/Controller/'
+  type: annotation

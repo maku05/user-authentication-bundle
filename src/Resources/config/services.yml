@@ -1,0 +1,12 @@
+services:
+  _defaults:
+    autowire: true
+    public: true
+
+  Maku05\UserAuthenticationBundle\:
+    resource: "../../{Entity,Repository,Security}/*"
+
+  Maku05\UserAuthenticationBundle\Controller\:
+    resource: '../../Controller/'
+    tags: [ 'controller.service_arguments' ]
+
