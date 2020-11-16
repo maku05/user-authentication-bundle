@@ -90,15 +90,24 @@ class UserController extends AbstractController
     public function postCreateUserAction(Request $request): JsonResponse
     {
         if(!$request->get('password') || !$request->get('passwordConfirmation') || !$request->get('email')) {
-            return $this->getApiJsonResponse(['error' => 'The given data is insufficient. Please make shure to give a email, password, password confirmation.'], Response::HTTP_BAD_REQUEST);
+            return $this->getApiJsonResponse([
+                'error' => 'data_insufficient',
+                'message' => 'The given data is insufficient. Please make shure to give a email, password, password confirmation.',
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         if(self::AUTHENTICATION_PASSWORD_MIN_LENGTH > strlen($request->get('password'))) {
-            return $this->getApiJsonResponse(['error' => 'The given password must be at least 8 characters'], Response::HTTP_BAD_REQUEST);
+            return $this->getApiJsonResponse([
+                'error' => 'password_length',
+                'message' => 'The given password must be at least 8 characters'
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         if($request->get('password') != $request->get('passwordConfirmation')) {
-            return $this->getApiJsonResponse(['error' => 'The password confirmation is not equal to the given password'], Response::HTTP_BAD_REQUEST);
+            return $this->getApiJsonResponse([
+                'error' => 'wrong_password',
+                'message' => 'The password confirmation is not equal to the given password'
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         $user = new User();
@@ -109,7 +118,10 @@ class UserController extends AbstractController
             $this->manager->persist($user);
             $this->manager->flush();
         } catch (UniqueConstraintViolationException $e) {
-            return $this->getApiJsonResponse(['error' => $e->getMessage()], Response::HTTP_CONFLICT);
+            return $this->getApiJsonResponse([
+                'error' => 'user_exists',
+                'message' => $e->getMessage()
+            ], Response::HTTP_CONFLICT);
         }
 
         return $this->getApiJsonResponse([

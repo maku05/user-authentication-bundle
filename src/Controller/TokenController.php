@@ -55,11 +55,18 @@ class TokenController extends AbstractController
     public function postCreateTokenAction(Request $request)
     {
         if(null === ($user = $this->userRepository->findOneBy(['email' => $request->getUser()]))) {
-            return $this->getApiJsonResponse(['error' => $this->translator->trans('finance.user.message.error.email.notFound')],Response::HTTP_NOT_FOUND);
+            return $this->getApiJsonResponse([
+                'error' => 'no_user',
+                'message' => 'No user was found to the email address.'
+            ],Response::HTTP_NOT_FOUND);
         }
 
+
         if(!$this->passwordEncoder->isPasswordValid($user, $request->getPassword())) {
-            return $this->getApiJsonResponse(['error' => $this->translator->trans('finance.user.message.error.password.wrong')],Response::HTTP_UNAUTHORIZED);
+            return $this->getApiJsonResponse([
+                'error' => 'wrong_password',
+                'message' => 'The given password is not correct'
+            ],Response::HTTP_UNAUTHORIZED);
         }
 
         return $this->getApiJsonResponse([
